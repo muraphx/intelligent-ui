@@ -16,6 +16,12 @@ export {
 } from '../ui/catalog';
 export { StreamingSpecParser } from '../ui/streaming-parser';
 
+// Reatividade: o que a interface resolve sozinha, sem ida ao provider
+export {
+  completion, computeResult, createLiveEmitter, formatResult, parseNumberField, validateLiveFields,
+  type FieldState, type LiveEvent, type LiveHandler, type LivePayload, type Operation,
+} from '../ui/live';
+
 // Rendering: renderer padrão e renderer com componentes próprios
 export { UIRenderer, createUIRenderer, type ActionHandler, type ComponentMap, type RendererProps } from '../ui/renderer';
 export * as defaultComponents from '../ui/components';

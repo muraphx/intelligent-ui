@@ -1,12 +1,13 @@
 import type { UISpec, ValidationError, ValidationResult } from '../ui/catalog';
 import type { DesignSystem } from '../design/system';
+import type { LiveEvent } from '../ui/live';
 import { StreamingSpecParser } from '../ui/streaming-parser';
 import { prepareAction } from './actions';
 import type { DemoId, GenerationRequest, UIAction, UIProvider } from './provider';
 
-export type ControllerState = { spec: UISpec | null; errors: ValidationError[]; status: 'idle' | 'streaming' | 'ready' | 'error'; raw: string; chunks: number; revision: number; events: { name: string; detail: string }[]; designSystem: DesignSystem | null };
+export type ControllerState = { spec: UISpec | null; errors: ValidationError[]; status: 'idle' | 'streaming' | 'ready' | 'error'; raw: string; chunks: number; revision: number; events: { name: string; detail: string }[]; designSystem: DesignSystem | null; livePulses: number };
 export class GenerativeUIController {
-  state: ControllerState = { spec: null, errors: [], status: 'idle', raw: '', chunks: 0, revision: 0, events: [], designSystem: null };
+  state: ControllerState = { spec: null, errors: [], status: 'idle', raw: '', chunks: 0, revision: 0, events: [], designSystem: null, livePulses: 0 };
   private listeners = new Set<() => void>();
   private abort?: AbortController;
   private demo: DemoId = 'analytics';
@@ -18,6 +19,15 @@ export class GenerativeUIController {
   private update(patch: Partial<ControllerState>) { this.state = { ...this.state, ...patch }; this.listeners.forEach(f => f()); }
   private log(name: string, detail: string) { this.update({ events: [...this.state.events, { name, detail }].slice(-12) }); }
   cancel() { this.abort?.abort(); this.abort = undefined; this.update({ status: this.state.spec ? 'ready' : 'idle' }); }
+  /**
+   * Evento em tempo real: a superfície reagiu sozinha (digitação, cálculo, prévia). Não passa pelo
+   * provider — é registro e telemetria do que já aconteceu na tela.
+   */
+  live(event: LiveEvent) {
+    const detail = Object.entries(event.payload).map(([key, value]) => `${key}: ${String(value).slice(0, 40)}`).join(' · ');
+    this.update({ livePulses: this.state.livePulses + 1 });
+    this.log(event.name, detail || 'interação local');
+  }
   setProvider(provider: UIProvider) { this.cancel(); this.provider = provider; }
   async generate(demo: DemoId, prompt?: string) {
     this.demo = demo; this.prompt = prompt;

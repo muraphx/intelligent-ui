@@ -1,6 +1,6 @@
 # Intelligent UI
 
-Um laboratório aberto de **UI generativa**: o provider escolhe componentes, emite JSON, a aplicação valida o contrato com Zod e renderiza React. Botões, calculadora e formulário devolvem ações ao provider; a resposta seguinte substitui a interface no mesmo espaço.
+Um laboratório aberto de **UI generativa**: o provider escolhe componentes, emite JSON, a aplicação valida o contrato com Zod e renderiza React. A interface **reage na hora** ao que a pessoa digita, a interação volta ao provider como uma etapa e a resposta seguinte substitui a interface — **trazendo o design system que ela mesma escolheu**. O ciclo inteiro também é publicado como biblioteca, para outros projetos usarem com os próprios componentes.
 
 Implementação independente para experimentar esse ciclo. Não é código, produto oficial nem reprodução fiel dos mecanismos internos do ChatGPT.
 
@@ -22,9 +22,13 @@ instalação que o implementador tentou dentro do sandbox do Codex falhou com `E
 Fora do sandbox, a entrega foi medida de ponta a ponta:
 
 - `npm install` → exit 0, 72 pacotes, `package-lock.json` gerado;
-- `npx vitest run` → **46 testes passando em 6 arquivos**;
-- `npm run build` → `tsc --noEmit` limpo + `vite build`, 119 módulos, 331,90 kB (100,57 kB gzip);
-- `npm run screenshot` → `PASS: 3 demos, calculator result 96, profile card, mini-game, mobile overflow, browser console`, com quatro prints reais em `docs/screenshot-*.png`.
+- `npx vitest run` → **64 testes passando em 9 arquivos** (contrato, validação, streaming, canal de ação, providers, design system, reatividade e superfície da biblioteca);
+- `npm run build` → `tsc --noEmit` limpo + `vite build`, 121 módulos, 343,42 kB (104,53 kB gzip);
+- `npm run build:lib` → pacote ESM em `dist/lib/index.js` (41,39 kB / 13,20 kB gzip) com tipos em `dist/lib/lib/index.d.ts`;
+- `npm run screenshot` → `PASS: 3 demos, calculator result 96, profile card, mini-game, mobile overflow, browser console`, quatro prints reais em `docs/screenshot-*.png`;
+- `node scripts/capture-themes.mjs` → `PASS: 5 sistemas capturados, 3 superfícies capturadas, console limpo` — e a própria captura confirmou que a resposta declara o sistema: receita → Papel, calculadora → Terminal, cartão → Brutal;
+- `node scripts/capture-live.mjs` → `PASS: reativo sem envio. Calculadora: 250 × 4 = 1.000 (a cada tecla). Formulário: medidor 0% -> 100% com prévia ao vivo. Eventos em tempo real: 10. Console limpo.`;
+- `node examples/minimal/capture.mjs` → `PASS: exemplo do consumidor renderizou, a ação trocou a interface e o console está limpo.`
 
 Dentro do sandbox a verificação continua sendo sua responsabilidade rodar.
 
@@ -37,6 +41,46 @@ Dentro do sandbox a verificação continua sendo sua responsabilidade rodar.
 | Cartão de perfil | Formulário com nome, função e descrição | Envie o formulário: ele é substituído por um ProfileCard; “Criar outro cartão” reinicia o fluxo |
 
 Na demo, o texto do composer é exibido e enviado ao provider, mas **a resposta é a composição determinística do cenário selecionado**. Não há um modelo rodando localmente. Para geração livre a partir do texto, use o provider remoto. O histórico de atividade mostra a ação, a resposta e a revisão. A aba “Spec JSON” revela exatamente os dados validados.
+
+## Reativo em tempo real
+
+A superfície não espera o provider para responder ao que foi digitado. A conta vive em funções puras
+(`src/ui/live.ts`) e o componente as chama a cada tecla:
+
+- **Calculadora** recalcula a cada tecla e explica o erro sem quebrar (dividir por zero, campo vazio,
+  valor fora do limite). O envio ao provider continua existindo — agora só quando a pessoa quer que a
+  **resposta** mude.
+- **Formulário** valida campo a campo enquanto se digita, mostra o medidor de preenchimento e compõe
+  uma **prévia ao vivo** do que está sendo escrito.
+- **Mini-jogo** pré-visualiza a escolha no foco/hover antes do clique.
+- **Gráfico** anima as barras quando os dados chegam diferentes.
+
+Cada interação local também emite um evento (`onLive`) com throttle de 180 ms — o primeiro sai na
+hora e o último valor sempre é entregue. No app, isso alimenta o contador *Eventos em tempo real* no
+painel de bastidores.
+
+## Design system como contrato
+
+Três decisões (`mode`, `font`, `radius`), uma de profundidade (`depth`) e 14 cores em hex, tudo
+validado com Zod e aplicado como custom properties — `src/ui` nunca importa CSS.
+
+- **5 presets**: Papel, Terminal, Brutal, Clínico, Noturno.
+- **Tokens próprios**: o editor do app valida o JSON colado contra o mesmo contrato e guarda no
+  navegador.
+- **A resposta escolhe**: a spec pode trazer `"designSystem": "terminal"` ou o objeto completo, e a
+  superfície se reestiliza sozinha. As demos fazem isso (papel / terminal / brutal).
+
+## Usar em outro projeto
+
+O ciclo inteiro sai pelo entry público `src/lib/index.ts` e vira pacote com `npm run build:lib`
+(ESM + tipos, React/Zod/DOM como *peer dependencies*). Há um consumidor mínimo em
+[`examples/minimal`](examples/minimal) — componentes próprios, provider próprio e tokens próprios, em
+~20 linhas de glue. Guia completo em [`docs/LIBRARY.md`](docs/LIBRARY.md).
+
+```sh
+npm run example        # o consumidor externo rodando
+npm run example:shot   # print real em docs/screenshot-example*.png
+```
 
 ## Spec plana e catálogo
 
