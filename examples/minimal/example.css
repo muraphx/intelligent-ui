@@ -1,0 +1,23 @@
+/* O projeto externo traz a própria linguagem visual e usa os tokens do design system. */
+:root { font-family: var(--font-family); }
+body { margin: 0; background: var(--bg); color: var(--text); }
+.ex-shell { max-width: 720px; margin: 0 auto; padding: 48px 24px 72px; }
+.ex-kicker { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+.ex-title { font-family: var(--font-display); font-size: 34px; margin: 10px 0 6px; }
+.ex-lead { color: var(--muted); margin: 0 0 28px; max-width: 60ch; }
+.ex-panel { border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); padding: 22px; }
+.ex-stack { display: flex; gap: 14px; flex-wrap: wrap; }
+.ex-stack.vertical { flex-direction: column; flex-wrap: nowrap; }
+.ex-stack.horizontal { flex-direction: row; align-items: stretch; }
+.ex-prose h2 { font-family: var(--font-display); font-size: 21px; margin: 0 0 6px; }
+.ex-prose p { margin: 0; color: var(--muted); line-height: 1.7; }
+.ex-metric { border-top: 2px solid var(--accent); padding-top: 10px; min-width: 150px; }
+.ex-metric span { display: block; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.ex-metric strong { font-family: var(--font-display); font-size: 30px; display: block; margin: 4px 0 2px; }
+.ex-metric small { color: var(--muted); }
+.ex-button { background: var(--accent); color: var(--bg); border: 0; font: inherit; padding: 11px 18px; border-radius: var(--radius); align-self: flex-start; }
+.ex-button:hover { background: var(--accent-hover); }
+.ex-cycle { margin-top: 22px; font-size: 12px; color: var(--muted); display: flex; gap: 18px; flex-wrap: wrap; }
+.ex-cycle b { color: var(--text); font-variant-numeric: tabular-nums; }
+.ex-log { margin-top: 10px; padding: 0; list-style: none; font-size: 11px; color: var(--muted); }
+.ex-log li { padding: 3px 0; border-bottom: 1px dashed var(--line); }

@@ -1,11 +1,12 @@
 import type { UISpec, ValidationError, ValidationResult } from '../ui/catalog';
+import type { DesignSystem } from '../design/system';
 import { StreamingSpecParser } from '../ui/streaming-parser';
 import { prepareAction } from './actions';
 import type { DemoId, GenerationRequest, UIAction, UIProvider } from './provider';
 
-export type ControllerState = { spec: UISpec | null; errors: ValidationError[]; status: 'idle' | 'streaming' | 'ready' | 'error'; raw: string; chunks: number; revision: number; events: { name: string; detail: string }[] };
+export type ControllerState = { spec: UISpec | null; errors: ValidationError[]; status: 'idle' | 'streaming' | 'ready' | 'error'; raw: string; chunks: number; revision: number; events: { name: string; detail: string }[]; designSystem: DesignSystem | null };
 export class GenerativeUIController {
-  state: ControllerState = { spec: null, errors: [], status: 'idle', raw: '', chunks: 0, revision: 0, events: [] };
+  state: ControllerState = { spec: null, errors: [], status: 'idle', raw: '', chunks: 0, revision: 0, events: [], designSystem: null };
   private listeners = new Set<() => void>();
   private abort?: AbortController;
   private demo: DemoId = 'analytics';
@@ -42,7 +43,8 @@ export class GenerativeUIController {
     let accepted = false;
     const apply = (results: ValidationResult[]) => {
       for (const result of results) {
-        if (result.spec) { accepted = true; this.update({ spec: result.spec, revision: this.state.revision + 1 }); }
+        // A spec pode trocar o design system da superfície; sem declaração, mantém o que estava.
+        if (result.spec) { accepted = true; this.update({ spec: result.spec, revision: this.state.revision + 1, designSystem: result.designSystem ?? null }); }
         if (result.errors.length) this.update({ errors: [...this.state.errors, ...result.errors].slice(-30) });
       }
     };

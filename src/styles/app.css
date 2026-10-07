@@ -199,3 +199,40 @@ fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 @media (max-width: 1000px) { .inspector { display: none; } .playground-layout { grid-template-columns: minmax(0,1fr); } .sidebar { width: 222px; } h1 { font-size: 27px; } }
 @media (max-width: 720px) { .app-shell { display: block; } .sidebar { position: static; width: 100%; height: auto; padding: 16px; border-right: 0; border-bottom: 1px solid var(--line); } .brand { padding: 0; } .brand-mark { width: 31px; height: 31px; font-size: 24px; } .brand > span:last-child { font-size: 21px; } .workspace-label, .nav-section-label, .nav-item, .sidebar-bottom { display: none; } .sidebar nav { display: flex; gap: 6px; margin-top: 16px; } .demo-nav { padding: 9px 7px; gap: 5px; justify-content: center; } .demo-nav > span:nth-child(2) { font-size: 10px; } .demo-nav small, .demo-nav .active-dot { display: none; } .demo-icon { font-size: 16px; width: auto; } .topbar { padding: 0 18px; height: 53px; } .topbar-actions { gap: 10px; } .topbar > div:first-child { display: none; } .topbar-actions { width: 100%; justify-content: space-between; } main { padding: 26px 16px 20px; } h1 { font-size: 27px; letter-spacing: -.9px; line-height: 1.25; max-width: 340px; } .page-heading { margin-bottom: 23px; } .page-heading p { font-size: 11px; } .conversation-header { padding: 14px; } .conversation-title { font-size: 11px; } .scenario-badge { font-size: 8px; } .conversation-body { padding: 19px 13px 0; } .user-message, .assistant-message { gap: 8px; } .assistant-avatar, .user-avatar { width: 24px; height: 24px; border-radius: 6px; } .answer-status { font-size: 8px !important; } .surface-version { display: none; } .ui-stack.horizontal { flex-direction: column; gap: 9px; } .metric-card { padding: 13px 15px; } .metric-card h3 { font-size: 8px; } .metric-value { font-size: 26px; } .metric-card p { font-size: 9px; } .metric-trend { position: absolute; right: 12px; top: 12px; } .markdown h2 { font-size: 18px; line-height: 1.4; } .chart-card { padding: 14px 9px 9px; } .chart-card figcaption { display: block; padding-inline: 4px; } .chart-legend { margin-top: 9px; } .chart-card svg { min-height: 155px; } .composer { margin-inline: 12px; padding: 11px; } .page-footer { flex-direction: column; align-items: center; line-height: 1.6; text-align: center; } .interactive-card { padding: 16px; } .calculator-fields { grid-template-columns: 1fr; gap: 0; } .interactive-card input, .interactive-card select, .composer textarea { font-size: 16px; } .profile-card { padding: 25px 15px; } .button { min-height: 40px; } .send-button { width: 38px; height: 38px; } .json-view { font-size: 10px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* Design system: presets, tokens personalizados e o sistema que a resposta escolheu */
+.ds-label { margin-top: 22px; }
+.ds-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 10px; }
+.ds-preset { display: grid; gap: 3px; padding: 8px 9px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; }
+.ds-preset:hover { background: var(--subtle); }
+.ds-preset.active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.ds-swatches { display: flex; gap: 3px; }
+.ds-swatches i { width: 12px; height: 12px; border-radius: 3px; border: 1px solid #00000018; }
+.ds-preset-name { font-size: 11px; font-weight: 600; }
+.ds-preset-meta { font-size: 8px; color: var(--muted); letter-spacing: .3px; }
+.ds-current { display: flex; align-items: center; gap: 7px; margin: 0 0 8px; padding: 7px 9px; border: 1px dashed var(--line); border-radius: 9px; }
+.ds-current > span:last-child { min-width: 0; }
+.ds-current strong { font-size: 11px; }
+.ds-current small { display: block; font-size: 8px; color: var(--muted); }
+.ds-current-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.ds-actions { display: flex; gap: 6px; }
+.ds-action { flex: 1; font-size: 10px; padding: 7px 8px; background: var(--subtle); color: var(--text); border: 1px solid var(--line); border-radius: 8px; }
+.ds-action:hover { background: var(--accent-soft); color: var(--accent-ink); }
+.ds-editor { margin-top: 10px; padding: 10px; background: var(--subtle); border: 1px solid var(--line); border-radius: 10px; }
+.ds-editor-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+.ds-editor-head button { background: transparent; border: 0; font-size: 17px; line-height: 1; }
+.ds-editor-hint { font-size: 9px; color: var(--muted); line-height: 1.6; margin: 6px 0; }
+.ds-editor textarea { width: 100%; font: 10px/1.6 ui-monospace, Consolas, monospace; padding: 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--text); resize: vertical; }
+.ds-error { font-size: 9px; color: var(--danger); background: var(--danger-bg); padding: 6px 7px; border-radius: 6px; margin: 7px 0 0; line-height: 1.5; }
+.ds-editor-actions { display: flex; gap: 6px; margin-top: 8px; }
+.system-choice { color: var(--accent-ink); background: var(--accent-soft); padding: 2px 7px; border-radius: 20px; font-size: 9px; margin-right: 8px; }
+.footer-mode { font-family: inherit; margin-left: 0; color: var(--quiet); }
+/* O bloco deslocado é do mundo que o declara: só o Brutal pede borda grossa e sombra dura. */
+[data-depth="hard"] .metric-card, [data-depth="hard"] .interactive-card, [data-depth="hard"] .chart-card, [data-depth="hard"] .profile-card, [data-depth="hard"] .conversation { border: var(--border-width) solid var(--line); box-shadow: var(--surface-shadow); }
+/* Superfícies do navegador carregam o design: seleção, caret, barra de rolagem e numerais. */
+::selection { background: var(--selection); }
+body { caret-color: var(--accent); }
+pre, .json-view, .stream-stats strong, .metric-value, .ds-preset-meta, .lab-label, .surface-version { font-variant-numeric: tabular-nums; }
+* { scrollbar-color: var(--line) transparent; scrollbar-width: thin; }
+@media (max-width: 720px) { .ds-presets, .ds-current, .ds-actions, .ds-editor { display: none; } }
+

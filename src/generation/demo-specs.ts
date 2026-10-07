@@ -22,14 +22,14 @@ export function createDemoSpec(request: GenerationRequest): UISpec {
       elements.result = metric('RESULTADO DO CÁLCULO', Number(a.payload.result).toLocaleString('pt-BR', { maximumFractionDigits: 10 }), `${a.payload.a} ${ { add: '+', subtract: '−', multiply: '×', divide: '÷' }[a.payload.operation as 'add']} ${a.payload.b}`);
       elements.calculator = { type: 'Calculator', props: { ...calculator.props, initialA: Number(a.payload.a), initialB: Number(a.payload.b), operation: a.payload.operation as 'add' }, children: [] };
     }
-    return { root: 'root', elements };
+    return { root: 'root', elements, designSystem: 'terminal' };
   }
   if (request.demo === 'profile') {
-    if (a?.name === 'create_profile') return { root: 'root', elements: {
+    if (a?.name === 'create_profile') return { root: 'root', designSystem: 'brutal', elements: {
       root: stack(['intro', 'profile', 'edit']), intro: markdown('## Prazer em conhecer você.\nSeu formulário virou um cartão. Uma ação, uma nova interface.'),
       profile: { type: 'ProfileCard', props: { name: String(a.payload.name), role: String(a.payload.role), bio: String(a.payload.bio ?? ''), tag: 'Criado nesta conversa' }, children: [] }, edit: button('Criar outro cartão', 'reset_profile'),
     } };
-    return { root: 'root', elements: { root: stack(['intro', 'profile-form']), intro: markdown('## Sua próxima apresentação começa aqui\nConte um pouco sobre você e veja a interface se transformar.'), 'profile-form': profileForm } };
+    return { root: 'root', designSystem: 'brutal', elements: { root: stack(['intro', 'profile-form']), intro: markdown('## Sua próxima apresentação começa aqui\nConte um pouco sobre você e veja a interface se transformar.'), 'profile-form': profileForm } };
   }
   const elements: UISpec['elements'] = {
     root: stack(['intro', 'metrics', 'revenue-chart', 'insight', 'quiz-button']),
@@ -47,5 +47,5 @@ export function createDemoSpec(request: GenerationRequest): UISpec {
     elements.quiz = { type: 'MiniGame', props: { title: 'Uma pergunta rápida', question: 'Qual mês teve a maior receita?', options: ['Abr', 'Mai', 'Jun'], action: 'answer_quiz' }, children: [] };
     if (a.name === 'answer_quiz') elements.feedback = markdown(a.payload.choice === 'Jun' ? 'Acertou! Junho teve a maior receita: R$ 48.200.' : 'Quase! Veja a última coluna: junho teve a maior receita, com R$ 48.200. Tente novamente.');
   }
-  return { root: 'root', elements };
+  return { root: 'root', elements, designSystem: 'papel' };
 }

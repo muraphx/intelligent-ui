@@ -1,9 +1,17 @@
 {
   "name": "intelligent-ui",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "license": "MIT",
+  "description": "UI generativa como dado: spec plana validada com Zod, streaming tolerante, canal de ações e design system como contrato.",
+  "files": ["dist/lib", "README.md", "LICENSE"],
+  "main": "./dist/lib/index.js",
+  "module": "./dist/lib/index.js",
+  "types": "./dist/lib/lib/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/lib/lib/index.d.ts", "import": "./dist/lib/index.js" }
+  },
   "engines": { "node": ">=22.12.0" },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
@@ -12,8 +20,12 @@
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
     "test:watch": "vitest",
-    "screenshot": "node scripts/capture.mjs"
+    "screenshot": "node scripts/capture.mjs",
+    "build:lib": "vite build --config vite.lib.config.ts && tsc -p tsconfig.lib.json",
+    "example": "vite --config examples/minimal/vite.config.ts --host 127.0.0.1",
+    "example:shot": "node examples/minimal/capture.mjs"
   },
+  "peerDependencies": { "react": "^19.0.0", "react-dom": "^19.0.0", "zod": "^4.0.0" },
   "dependencies": { "react": "^19.2.0", "react-dom": "^19.2.0", "zod": "^4.1.12" },
   "devDependencies": {
     "@types/node": "^20.19.43",
