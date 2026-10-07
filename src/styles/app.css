@@ -239,7 +239,7 @@ pre, .json-view, .stream-stats strong, .metric-value, .ds-preset-meta, .lab-labe
 /* Tempo real: a interface responde ao que foi digitado, sem esperar o provider */
 .live-chip { font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); background: var(--accent-soft); padding: 2px 6px; border-radius: 20px; margin-right: 7px; }
 .live-readout { display: flex; align-items: center; gap: 9px; margin: 12px 0; padding: 10px 12px; border: 1px dashed var(--line); border-radius: 9px; background: var(--subtle); }
-.live-readout strong { font-size: 25px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.live-readout strong { font-size: 25px; font-variant-numeric: tabular-nums; letter-spacing: -.02em; color: var(--text); }
 .live-readout small { color: var(--muted); font-size: 10px; }
 .live-meter { display: flex; align-items: center; gap: 9px; margin: 12px 0; font-size: 10px; color: var(--muted); }
 .live-meter-track { flex: 1; height: 5px; border-radius: 20px; background: var(--line); overflow: hidden; }
@@ -248,7 +248,7 @@ pre, .json-view, .stream-stats strong, .metric-value, .ds-preset-meta, .lab-labe
 .live-preview { margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .live-preview > div { margin-top: 7px; }
 .live-preview small { display: block; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.live-preview strong { font-size: 14px; }
+.live-preview strong { font-size: 14px; color: var(--text); }
 .live-note { font-size: 10px; color: var(--muted); margin: 10px 0 0; }
 .field-hint { display: block; font-size: 10px; color: var(--danger); margin-top: 4px; }
 label.has-error input { border-color: var(--danger); }
