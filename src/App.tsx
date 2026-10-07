@@ -1,0 +1,54 @@
+import { useEffect, useState, useSyncExternalStore, type FormEvent } from 'react';
+import { GenerativeUIController } from './generation/controller';
+import { DemoProvider } from './generation/demo-provider';
+import { RemoteProvider } from './generation/remote-provider';
+import { demos } from './generation/demo-specs';
+import type { DemoId } from './generation/provider';
+import { UIRenderer } from './ui/renderer';
+import { catalog } from './ui/catalog';
+
+const icons = ['▥', '∑', '◉'];
+export default function App() {
+  const [controller] = useState(() => new GenerativeUIController(new DemoProvider()));
+  const state = useSyncExternalStore(controller.subscribe, controller.getSnapshot);
+  const [demo, setDemo] = useState<DemoId>('analytics');
+  const [mode, setMode] = useState('demo');
+  const [prompt, setPrompt] = useState(demos[0].prompt);
+  const [sentPrompt, setSentPrompt] = useState(demos[0].prompt);
+  const [tab, setTab] = useState<'preview' | 'spec'>('preview');
+  const [dark, setDark] = useState(false);
+  const [help, setHelp] = useState(false);
+  const current = demos.find(d => d.id === demo)!;
+  const busy = state.status === 'streaming';
+  useEffect(() => { void controller.generate('analytics', demos[0].prompt); return () => controller.cancel(); }, [controller]);
+  useEffect(() => { document.documentElement.dataset.theme = dark ? 'dark' : 'light'; }, [dark]);
+  function chooseDemo(id: DemoId) { const chosen = demos.find(d => d.id === id)!; setDemo(id); setPrompt(chosen.prompt); setSentPrompt(chosen.prompt); setTab('preview'); void controller.generate(id, chosen.prompt); }
+  function changeMode(value: string) { setMode(value); controller.setProvider(value === 'demo' ? new DemoProvider() : new RemoteProvider()); void controller.generate(demo, prompt); }
+  function submit(event: FormEvent) { event.preventDefault(); if (!prompt.trim()) return; setSentPrompt(prompt.trim()); void controller.generate(demo, prompt.trim()); }
+
+  return <div className="app-shell"><a className="skip-link" href="#main">Ir para o conteúdo</a>
+    <aside className="sidebar"><a className="brand" href="/" aria-label="Intelligent UI, início"><span className="brand-mark" aria-hidden="true">▦</span><span>intelligent<span className="brand-ui">ui</span><small>GENERATIVE PLAYGROUND</small></span></a>
+      <div className="workspace-label"><span className="workspace-avatar">P</span>Personal workspace <span className="workspace-chevron">⌄</span></div>
+      <div className="nav-section-label">WORKSPACE</div><div className="nav-item selected"><span aria-hidden="true">◈</span> Playground <span className="small-tag">BETA</span></div>
+      <button className="nav-item" onClick={() => setHelp(v => !v)}><span aria-hidden="true">▦</span> Catálogo de componentes <span className="nav-count">9</span></button>
+      <div className="nav-section-label examples-label">EXPLORE AS DEMOS <span>03</span></div><nav aria-label="Demonstrações">{demos.map((d, i) => <button key={d.id} className={`demo-nav ${demo === d.id ? 'active' : ''}`} aria-current={demo === d.id ? 'page' : undefined} onClick={() => chooseDemo(d.id)}><span className="demo-icon" aria-hidden="true">{icons[i]}</span><span>{d.title}<small>{d.description}</small></span>{demo === d.id && <span className="active-dot" />}</button>)}</nav>
+      <div className="sidebar-bottom"><div className="local-note"><span className="local-icon" aria-hidden="true">⌁</span><strong>Comece sem uma chave</strong><p>As demos rodam no seu navegador. Nenhuma conta necessária.</p><span className="local-badge"><i /> 100% local no modo demo</span></div><div className="sidebar-footer"><span className="open-source-dot" /> Open source <span>v1.0</span><button title={dark ? 'Ativar tema claro' : 'Ativar tema escuro'} aria-label={dark ? 'Ativar tema claro' : 'Ativar tema escuro'} onClick={() => setDark(v => !v)}>{dark ? '☀' : '☾'}</button></div></div>
+    </aside>
+    <div className="workspace"><header className="topbar"><div><span className="breadcrumb-icon" aria-hidden="true">▧</span> Workspace <span className="breadcrumb-slash">/</span> <strong>Playground</strong></div><div className="topbar-actions"><span className="connection-status"><i /> {mode === 'demo' ? 'Demo offline' : 'Provider externo'}</span><button className="button small secondary" onClick={() => setHelp(v => !v)}>Como funciona <span aria-hidden="true">↗</span></button></div></header>
+    <main id="main"><div className="page-heading"><div><div className="eyebrow">UMA NOVA FORMA DE CONVERSAR</div><h1>Respostas que viram interfaces<span>.</span></h1><p>Peça, interaja, explore. A próxima resposta pode ser uma ferramenta.</p></div><span className="lab-label">LAB / 001</span></div>
+    {help && <section className="help-panel"><div><h2>Um catálogo. Infinitas composições.</h2><button aria-label="Fechar explicação" onClick={() => setHelp(false)}>×</button></div><p>O provider escolhe componentes, envia uma spec JSON e a aplicação valida cada elemento com Zod. Uma interação devolve uma etapa ao provider, que compõe a próxima interface.</p><div className="catalog-tags">{Object.keys(catalog).map(name => <code key={name}>{name}</code>)}</div><p className="muted">Na demo, as respostas são determinísticas e usam dados fictícios. Para um modelo real, configure o proxy conforme o README.</p></section>}
+    <div className="playground-layout"><section className="conversation" aria-label="Conversa e interface"><div className="conversation-header"><span className="conversation-title"><span className="spark" aria-hidden="true">✳</span> {current.title}</span><span className="scenario-badge">{current.tag}</span></div>
+      <div className="conversation-body"><div className="user-message"><span className="user-avatar">VC</span><div><div className="message-author">Você <span>agora</span></div><p>{sentPrompt}</p></div></div>
+      <div className="assistant-message"><span className="assistant-avatar" aria-hidden="true">✳</span><div className="assistant-content"><div className="message-author">Intelligent UI <span className="mode-label">{mode === 'demo' ? 'DEMO' : 'MODELO'}</span><span className="answer-status" role="status">{busy ? 'Compondo resposta…' : state.status === 'error' ? 'Requer atenção' : state.spec ? 'Resposta pronta' : 'Aguardando'}</span></div>
+      <div className="surface-toolbar"><div className="view-switch" role="group" aria-label="Visualização"><button aria-pressed={tab === 'preview'} onClick={() => setTab('preview')}>◫ Interface</button><button aria-pressed={tab === 'spec'} onClick={() => setTab('spec')}>{'{ }'} Spec JSON</button></div><span className="surface-version">{state.spec ? `${Object.keys(state.spec.elements).length} componentes` : 'Recebendo spec'}</span></div>
+      {state.errors.length > 0 && <div className="error-box" role="alert"><strong>A resposta precisa de atenção</strong>{state.errors.map((e, i) => <p key={i}>{e.elementId && `${e.elementId}: `}{e.message}</p>)}<button className="button secondary small" onClick={() => void controller.retry()}>Tentar novamente</button></div>}
+      <div className="generated-surface" aria-busy={busy}>{tab === 'spec' ? <pre className="json-view" tabIndex={0}>{state.spec ? JSON.stringify(state.spec, null, 2) : state.raw || 'Aguardando o primeiro fragmento…'}</pre> : state.spec ? <UIRenderer spec={state.spec} onAction={action => void controller.dispatch(action)} disabled={busy} /> : <div className="surface-empty"><span className={busy ? 'loading-symbol' : ''}>✳</span><h2>{busy ? 'Compondo sua interface' : 'Sua próxima interface aparece aqui'}</h2><p>{busy ? `${state.chunks} fragmentos recebidos. Validando a resposta…` : 'Escolha uma demo ou tente gerar novamente.'}</p></div>}</div>
+      <div className="validation-strip"><span><i className={state.errors.length ? 'warning-dot' : ''} />{state.spec ? 'Validado com Zod' : 'Validação antes de renderizar'}</span><span>JSON → React <span aria-hidden="true">↗</span></span></div></div></div></div>
+      <form className="composer" onSubmit={submit}><label className="sr-only" htmlFor="prompt">Seu pedido</label><textarea id="prompt" value={prompt} onChange={e => setPrompt(e.target.value)} maxLength={4000} rows={2} placeholder="O que você quer explorar?" /><div className="composer-footer"><label className="provider-select"><span aria-hidden="true">◉</span><span className="sr-only">Provider</span><select value={mode} onChange={e => changeMode(e.target.value)}><option value="demo">Demo offline</option><option value="remote">API via proxy local</option></select></label><span className="composer-hint">{mode === 'demo' ? 'Resposta de exemplo da demo selecionada' : 'Usa a configuração do seu .env'}</span>{busy ? <button type="button" className="send-button" aria-label="Cancelar geração" onClick={() => controller.cancel()}>■</button> : <button type="submit" className="send-button" disabled={!prompt.trim()} aria-label="Gerar interface">↑</button>}</div></form>
+    </section>
+    <aside className="inspector" aria-label="Bastidores da geração"><div className="inspector-heading"><span aria-hidden="true">⌘</span><h2>Por trás da interface</h2><span className="live-label">LIVE</span></div><p className="inspector-intro">Do pedido à próxima interação.<br />Acompanhe o ciclo acontecer.</p><ol className="pipeline"><li className="complete"><span>01</span><div><strong>Compor</strong><p>O provider escolhe a melhor<br />forma de responder.</p></div><b>✓</b></li><li className={state.chunks ? 'complete' : ''}><span>02</span><div><strong>Validar</strong><p>Cada componente passa<br />pelo contrato Zod.</p></div><b>{state.spec ? '✓' : '·'}</b></li><li className={state.spec ? 'complete' : ''}><span>03</span><div><strong>Interagir</strong><p>Sua ação gera uma nova<br />resposta neste espaço.</p></div><b>{state.spec ? '↗' : '·'}</b></li></ol>
+      <div className="inspector-divider" /><div className="activity-heading"><h3>ATIVIDADE DA SESSÃO</h3><span>{state.events.length.toString().padStart(2, '0')}</span></div><ol className="event-list">{state.events.map((event, i) => <li key={i}><span className="event-dot" /><div><strong>{event.name}</strong><p>{event.detail}</p></div></li>)}</ol><div className="stream-stats"><span>Fragmentos recebidos<strong>{state.chunks}</strong></span><span>Revisão da interface<strong>{state.revision.toString().padStart(2, '0')}</strong></span></div>
+      <div className="inspector-note"><span aria-hidden="true">◇</span><p><strong>Interface como dado.</strong><br />Componentes conhecidos, props tipadas e ações de volta ao provider.</p></div>
+    </aside></div><footer className="page-footer"><span>Feito para experimentar. Aberto para construir.</span><span>React · TypeScript · Zod <i /> {mode === 'demo' ? 'Sem chave de API' : 'Chave somente no servidor'}</span></footer></main></div>
+  </div>;
+}

@@ -56,6 +56,20 @@ Nunca crie nada sob a conta/org da Liquid (risco de IP do empregador — regra d
 Nome sugerido: `intelligent-ui` (ou `generative-ui-lab`). Commit com mensagem descritiva, push, e
 confirme que a URL responde.
 
+## ADENDO — você NÃO commita e NÃO publica
+
+Regra de ouro da delegação: você é o **implementador**, o orquestrador é o revisor. Portanto:
+
+- **Não** rode `git commit`, `git push`, `gh repo create`, nem crie repositório. Deixe a árvore de
+  trabalho pronta (arquivos criados/modificados, não commitados).
+- Rode as provas (`npm ci`, `npm test`, `npm run build`) e reporte a saída **real**, colada.
+- Salve o print em `docs/screenshot-*.png` como pedido.
+- No relatório final informe: caminho dos arquivos, saída real dos comandos, e **o que não
+  funcionou** ou ficou de fora. Se algum passo exigir credencial que você não tem, diga — não
+  contorne em silêncio.
+
+A publicação no GitHub é minha (o orquestrador faz, na conta pessoal correta).
+
 ## Resposta final (obrigatória, em texto simples)
 
 1. URL do repositório público + SHA do commit.
