@@ -40,7 +40,7 @@ export function Markdown({ content }: Props<'Markdown'>) {
 }
 
 export function MetricCard(props: Props<'MetricCard'>) {
-  return <Card className="min-w-[168px] flex-1 gap-0 py-4">
+  return <Card className="metric-card min-w-[168px] flex-1 gap-0 py-4">
     <CardHeader className="gap-1 px-4">
       <CardTitle className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">{props.label}</CardTitle>
       <div className="metric-value font-mono text-3xl leading-none font-semibold tracking-tight tabular-nums text-card-foreground">{props.value}</div>
