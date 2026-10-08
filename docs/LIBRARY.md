@@ -19,10 +19,10 @@ interface, validação, streaming, canal de ações, providers e design system. 
 ## Instalar
 
 ```sh
-npm install intelligent-ui react react-dom zod
+npm install intelligent-ui react react-dom zod tailwindcss
 ```
 
-React, ReactDOM e Zod são **peer dependencies**: você traz a sua versão (React 19+, Zod 4+).
+React, ReactDOM, Zod e Tailwind v4 são **peer dependencies**: você traz a sua versão (React 19+, Zod 4+, Tailwind 4+). O Tailwind compila as classes dos componentes; o pacote entrega os nomes de token e o mapeamento do shadcn em `intelligent-ui/styles.css`.
 O pacote publica um único entry ESM com os tipos ao lado:
 
 ```

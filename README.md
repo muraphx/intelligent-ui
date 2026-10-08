@@ -97,7 +97,7 @@ validado com Zod e aplicado como custom properties — `src/ui` nunca importa CS
 ## Usar em outro projeto
 
 O ciclo inteiro sai pelo entry público `src/lib/index.ts` e vira pacote com `npm run build:lib`
-(ESM + tipos, React/Zod/DOM como *peer dependencies*). Há um consumidor mínimo em
+(ESM + tipos + `styles.css`, com React/Zod/DOM/Tailwind como *peer dependencies*). Há um consumidor mínimo em
 [`examples/minimal`](examples/minimal) — componentes próprios, provider próprio e tokens próprios, em
 ~20 linhas de glue. Guia completo em [`docs/LIBRARY.md`](docs/LIBRARY.md).
 
