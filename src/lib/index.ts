@@ -35,7 +35,7 @@ export type { DemoId, GenerationRequest, UIAction, UIProvider } from '../generat
 
 // Design system como dado
 export {
-  applyDesignSystem, clearDesignSystem, designSystemIds, designSystemToJson, designSystemVars,
-  DesignSystemSchema, isDesignSystemId, parseDesignSystemJson, preset, presets, resolveDesignSystem,
+  applyDesignSystem, clearDesignSystem, contrastRatio, designSystemIds, designSystemToJson, designSystemVars,
+  DesignSystemSchema, isDesignSystemId, parseDesignSystemJson, preset, presets, readableOn, resolveDesignSystem,
   type DesignSystem, type DesignSystemId,
 } from '../design/system';

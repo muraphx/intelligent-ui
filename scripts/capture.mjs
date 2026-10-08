@@ -30,8 +30,9 @@ try {
   await page.getByRole('button', { name: /Calculadora Uma resposta/ }).click();
   await page.getByLabel('Primeiro valor').fill('12');
   await page.getByLabel('Segundo valor').fill('8');
-  await page.getByLabel('Operação').selectOption('multiply');
-  await page.getByRole('button', { name: 'Calcular resultado' }).click();
+  await page.getByLabel('Operação').click();
+  await page.getByRole('option', { name: '× Multiplicar' }).click();
+  await page.getByRole('button', { name: /Enviar resultado ao provider/ }).click();
   await page.getByText('96', { exact: true }).waitFor();
   await page.screenshot({ path: 'docs/screenshot-calculator.png', fullPage: true });
   await page.getByRole('button', { name: /Cartão de perfil Do formulário/ }).click();

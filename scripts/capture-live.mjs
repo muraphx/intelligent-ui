@@ -34,16 +34,19 @@ try {
   await page.getByText('Resposta pronta', { exact: true }).waitFor();
   await page.getByLabel('Primeiro valor').fill('250');
   await page.getByLabel('Segundo valor').fill('4');
-  await page.getByLabel('Operação').selectOption('multiply');
+  await page.getByLabel('Operação').click();
+  await page.getByRole('option', { name: '× Multiplicar' }).click();
   await page.waitForFunction(() => document.querySelector('.live-readout strong')?.textContent === '1.000');
   const liveResult = await page.locator('.live-readout strong').innerText();
   assert.equal(liveResult, '1.000', 'a calculadora deveria mostrar 1.000 sem envio');
   // Divergência em tempo real: divide por zero e a interface explica sem quebrar.
-  await page.getByLabel('Operação').selectOption('divide');
+  await page.getByLabel('Operação').click();
+  await page.getByRole('option', { name: '÷ Dividir' }).click();
   await page.getByLabel('Segundo valor').fill('0');
   await page.waitForFunction(() => (document.querySelector('.live-readout small')?.textContent ?? '').includes('dividir por zero'));
   await page.getByLabel('Segundo valor').fill('4');
-  await page.getByLabel('Operação').selectOption('multiply');
+  await page.getByLabel('Operação').click();
+  await page.getByRole('option', { name: '× Multiplicar' }).click();
   await page.waitForFunction(() => document.querySelector('.live-readout strong')?.textContent === '1.000');
   await page.locator('.generated-surface').screenshot({ path: 'docs/screenshot-live-calculator.png' });
 

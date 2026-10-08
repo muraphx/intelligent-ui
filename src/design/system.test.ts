@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
-  DesignSystemSchema, designSystemIds, designSystemToJson, designSystemVars, parseDesignSystemJson,
-  preset, resolveDesignSystem,
+  DesignSystemSchema, contrastRatio, designSystemIds, designSystemToJson, designSystemVars, parseDesignSystemJson,
+  preset, readableOn, resolveDesignSystem,
 } from './system';
 
 describe('design system contract', () => {
@@ -54,5 +54,31 @@ describe('design system contract', () => {
     expect(back.error).toBeUndefined();
     expect(parseDesignSystemJson('{ nope }').error).toContain('JSON inválido');
     expect(parseDesignSystemJson('{"name":"x"}').error).toBeTruthy();
+  });
+  it('calcula o texto sobre o accent por contraste, não a dedo', () => {
+    // Amarelo do Brutal e verde do Terminal são claros: texto escuro. Roxo do Noturno pede branco.
+    expect(readableOn('#ffd400')).toBe('#101014');
+    expect(readableOn('#58e08c')).toBe('#101014');
+    expect(readableOn('#a78bfa')).toBe('#101014');
+    expect(readableOn('#1d6cf0')).toBe('#ffffff');
+    expect(readableOn('#b4522c')).toBe('#ffffff');
+    expect(readableOn('#0f0f0f')).toBe('#ffffff');
+    // Contraste mínimo de 4.5:1 em todos os presets, medido pelo mesmo caminho do WCAG.
+    for (const id of designSystemIds) {
+      const accent = preset(id).colors.accent;
+      const on = readableOn(accent);
+      expect(contrastRatio(accent, on), `${id} deveria passar 4.5:1`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+  it('publica os tokens que a base de componentes (shadcn) consome', () => {
+    const vars = designSystemVars(preset('terminal'));
+    expect(vars['--accent']).toBe('#58e08c');
+    expect(vars['--accent-on']).toBe('#101014');
+    expect(vars['--hover']).toBe('#0e1512');
+    expect(vars['--ring']).toBe('#58e08c');
+    expect(vars['--input']).toBe('#22302a');
+    expect(vars['--chart-2']).toBe('#58e08c');
+    expect(vars['--font-mono-stack']).toContain('ui-monospace');
+    expect(vars['--radius']).toBe('6px');
   });
 });

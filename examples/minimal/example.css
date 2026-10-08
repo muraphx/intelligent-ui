@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@source "../../src";
+
 /* O projeto externo traz a própria linguagem visual e usa os tokens do design system. */
 :root { font-family: var(--font-family); }
 body { margin: 0; background: var(--bg); color: var(--text); }

@@ -40,7 +40,7 @@ try {
     await delay(260);
     const badge = await page.locator('.system-choice').first().innerText().catch(() => '');
     declared.push(`${title} -> ${badge || '(sem sistema declarado)'}`);
-    await page.locator('.generated-surface').screenshot({ path: `docs/screenshot-surface-${title.split(' ')[0].toLowerCase()}.png` });
+    await page.locator('.generated-surface').screenshot({ path: `docs/screenshot-surface-${title.split(' ')[0].toLowerCase().normalize('NFD').replace(/[^a-z]/g, '')}.png` });
   }
   assert.equal(problems.length, 0, `Console com erros: ${problems.join(' | ')}`);
   console.log('PASS: 5 sistemas capturados, 3 superfícies capturadas, console limpo.');

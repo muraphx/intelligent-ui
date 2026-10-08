@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
@@ -11,8 +12,8 @@ const here = dirname(fileURLToPath(import.meta.url));
  */
 export default defineConfig({
   root: here,
-  plugins: [react()],
-  resolve: { alias: { 'intelligent-ui': resolve(here, '../../src/lib/index.ts') } },
+  plugins: [react(), tailwindcss()],
+  resolve: { alias: { 'intelligent-ui': resolve(here, '../../src/lib/index.ts'), '@': resolve(here, '../../src') } },
   server: { port: 4300, strictPort: true, host: '127.0.0.1' },
   build: { outDir: resolve(here, 'dist'), emptyOutDir: true },
 });

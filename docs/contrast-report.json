@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-10-08T00:08:57.864Z",
+  "minimum": 4.5,
+  "systems": {
+    "papel": {
+      "checked": 44,
+      "failures": [],
+      "worst": {
+        "ratio": 5.02,
+        "label": "span.inline-flex \"Tendência positiva\""
+      }
+    },
+    "terminal": {
+      "checked": 44,
+      "failures": [],
+      "worst": {
+        "ratio": 5.02,
+        "label": "span.inline-flex \"Tendência positiva\""
+      }
+    },
+    "brutal": {
+      "checked": 44,
+      "failures": [],
+      "worst": {
+        "ratio": 5.02,
+        "label": "span.inline-flex \"Tendência positiva\""
+      }
+    },
+    "clinico": {
+      "checked": 44,
+      "failures": [],
+      "worst": {
+        "ratio": 5.02,
+        "label": "span.inline-flex \"Tendência positiva\""
+      }
+    },
+    "noturno": {
+      "checked": 44,
+      "failures": [],
+      "worst": {
+        "ratio": 5.02,
+        "label": "span.inline-flex \"Tendência positiva\""
+      }
+    }
+  }
+}

@@ -32,6 +32,37 @@ dist/lib/lib/index.d.ts    # tipos
 
 Para gerar localmente: `npm run build:lib`.
 
+## Base de componentes: shadcn/ui
+
+Os 9 componentes da UI gerada são construídos sobre a base **shadcn/ui** (Radix + Tailwind + CVA),
+com os arquivos em `src/components/ui/` — copiados para dentro do repositório, como manda o modelo
+do shadcn. Não há pacote de UI escondido: você lê e edita o componente que quiser.
+
+**A identidade continua vindo do design system.** O `@theme inline` de `src/styles/tailwind.css`
+aponta os nomes de token do shadcn (`--color-primary`, `--color-card`, `--color-border`…) para as
+custom properties que o design system escreve em tempo de execução. Não existe paleta duplicada:
+trocar o preset reestiliza os componentes shadcn de baixo para cima.
+
+```css
+/* o arquivo que o pacote publica como intelligent-ui/styles.css */
+@import "tailwindcss";
+@theme inline {
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-on); /* calculado por contraste WCAG */
+  --color-card: var(--surface);
+  /* … */
+}
+```
+
+Consequências práticas:
+
+- **Tailwind v4 é peer dependency.** Quem consome traz o próprio Tailwind; o pacote entrega os nomes
+  de token e o mapeamento via `intelligent-ui/styles.css`.
+- **O texto sobre a cor de marca é calculado**, não escolhido: `readableOn()` e `contrastRatio()` são
+  exportados, e o teste garante ≥ 4.5:1 nos cinco presets.
+- **Trocar um componente é trocar um arquivo** (`src/components/ui/button.tsx`) ou passar o seu mapa
+  de componentes — o catálogo da spec não muda.
+
 ## Receita 1 · Renderizar com os seus componentes
 
 ```tsx

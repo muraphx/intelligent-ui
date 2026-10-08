@@ -1,6 +1,6 @@
 # Intelligent UI
 
-Um laboratório aberto de **UI generativa**: o provider escolhe componentes, emite JSON, a aplicação valida o contrato com Zod e renderiza React. A interface **reage na hora** ao que a pessoa digita, a interação volta ao provider como uma etapa e a resposta seguinte substitui a interface — **trazendo o design system que ela mesma escolheu**. O ciclo inteiro também é publicado como biblioteca, para outros projetos usarem com os próprios componentes.
+Um laboratório aberto de **UI generativa**: o provider escolhe componentes, emite JSON, a aplicação valida o contrato com Zod e renderiza React. A interface **reage na hora** ao que a pessoa digita, a interação volta ao provider como uma etapa e a resposta seguinte substitui a interface — **trazendo o design system que ela mesma escolheu**. Os componentes saem de uma base **shadcn/ui** (Radix + Tailwind + CVA) com a identidade vinda dos tokens do design system. O ciclo inteiro também é publicado como biblioteca, para outros projetos usarem com os próprios componentes.
 
 Implementação independente para experimentar esse ciclo. Não é código, produto oficial nem reprodução fiel dos mecanismos internos do ChatGPT.
 
@@ -22,12 +22,13 @@ instalação que o implementador tentou dentro do sandbox do Codex falhou com `E
 Fora do sandbox, a entrega foi medida de ponta a ponta:
 
 - `npm install` → exit 0, 72 pacotes, `package-lock.json` gerado;
-- `npx vitest run` → **64 testes passando em 9 arquivos** (contrato, validação, streaming, canal de ação, providers, design system, reatividade e superfície da biblioteca);
-- `npm run build` → `tsc --noEmit` limpo + `vite build`, 121 módulos, 343,42 kB (104,53 kB gzip);
-- `npm run build:lib` → pacote ESM em `dist/lib/index.js` (41,39 kB / 13,20 kB gzip) com tipos em `dist/lib/lib/index.d.ts`;
-- `npm run screenshot` → `PASS: 3 demos, calculator result 96, profile card, mini-game, mobile overflow, browser console`, quatro prints reais em `docs/screenshot-*.png`;
-- `node scripts/capture-themes.mjs` → `PASS: 5 sistemas capturados, 3 superfícies capturadas, console limpo` — e a própria captura confirmou que a resposta declara o sistema: receita → Papel, calculadora → Terminal, cartão → Brutal;
-- `node scripts/capture-live.mjs` → `PASS: reativo sem envio. Calculadora: 250 × 4 = 1.000 (a cada tecla). Formulário: medidor 0% -> 100% com prévia ao vivo. Eventos em tempo real: 10. Console limpo.`;
+- `npx vitest run` → **66 testes passando em 9 arquivos** (contrato, validação, streaming, canal de ação, providers, design system, contraste, reatividade e superfície da biblioteca);
+- `npm run build` → `tsc --noEmit` limpo + `vite build`, 2117 módulos, 485,06 kB (151,30 kB gzip);
+- `npm run build:lib` → pacote ESM em `dist/lib/index.js` (61,75 kB / 17,98 kB gzip) com tipos em `dist/lib/lib/index.d.ts` e o CSS de tokens em `dist/lib/styles.css`;
+- `npm run screenshot` → `PASS: 3 demos, calculator result 96, profile card, mini-game, mobile overflow, browser console`, 4 prints reais em `docs/screenshot-*.png`;
+- `node scripts/capture-themes.mjs` → `PASS: 5 sistemas capturados, 3 superfícies capturadas, console limpo` — a própria captura confirma que a resposta declara o sistema: receita → Papel, calculadora → Terminal, cartão → Brutal;
+- `node scripts/capture-live.mjs` → `PASS: reativo sem envio. Calculadora: 250 × 4 = 1.000 (a cada tecla). Formulário: medidor 0% -> 100% com prévia ao vivo. Eventos em tempo real: 9. Console limpo.`;
+- `node scripts/audit-contrast.mjs` → **PASS: nenhum texto abaixo do mínimo WCAG nos 5 sistemas** (44 elementos medidos por sistema, 220 no total, pior caso 5,02:1 contra mínimo de 4,5:1);
 - `node examples/minimal/capture.mjs` → `PASS: exemplo do consumidor renderizou, a ação trocou a interface e o console está limpo.`
 
 Dentro do sandbox a verificação continua sendo sua responsabilidade rodar.
@@ -41,6 +42,29 @@ Dentro do sandbox a verificação continua sendo sua responsabilidade rodar.
 | Cartão de perfil | Formulário com nome, função e descrição | Envie o formulário: ele é substituído por um ProfileCard; “Criar outro cartão” reinicia o fluxo |
 
 Na demo, o texto do composer é exibido e enviado ao provider, mas **a resposta é a composição determinística do cenário selecionado**. Não há um modelo rodando localmente. Para geração livre a partir do texto, use o provider remoto. O histórico de atividade mostra a ação, a resposta e a revisão. A aba “Spec JSON” revela exatamente os dados validados.
+
+## Base de componentes: shadcn/ui
+
+Os nove componentes da UI gerada são construídos sobre a base **shadcn/ui** (Radix + Tailwind + CVA),
+com os arquivos em `src/components/ui/` copiados para dentro do repositório — o modelo do shadcn, sem
+pacote de UI escondido. O contrato da spec não mudou: o que mudou foi a base por baixo dele.
+
+**A identidade continua vindo do design system.** Os tokens que o shadcn espera (`--color-primary`,
+`--color-card`, `--color-border`, `--radius`) são escritos pelo design system **com valor literal** no
+container da superfície. Isso é o que faz cada escopo resolver os seus próprios tokens: a superfície
+veste o sistema que a resposta declarou sem vazar para a casca da aplicação, e trocar o preset
+reestiliza os componentes shadcn de baixo para cima. Nada de paleta duplicada.
+
+O texto sobre a cor de marca é **calculado por contraste WCAG**, não escolhido a dedo: um botão cheio
+usa `readableOn(accent)`, e o teste garante ≥ 4.5:1 nos cinco presets.
+
+| Sistema | `--radius` | Botão primário | Contraste do selo |
+| --- | --- | --- | --- |
+| Papel | 14 px | acento terracota + texto claro | 5,02:1 |
+| Terminal | 6 px | verde claro + texto escuro | 5,02:1 |
+| Brutal | 0 px | amarelo + texto escuro | 5,02:1 |
+| Clínico | 10 px | azul + texto claro | 5,02:1 |
+| Noturno | 16 px | roxo + texto escuro | 5,02:1 |
 
 ## Reativo em tempo real
 

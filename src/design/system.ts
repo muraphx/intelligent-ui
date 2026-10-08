@@ -109,6 +109,37 @@ function withAlpha(hexColor: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
+function relativeLuminance(hexColor: string): number {
+  const raw = hexColor.slice(1);
+  const full = raw.length === 3 ? raw.split('').map(c => c + c).join('') : raw;
+  const channels = [0, 2, 4].map(offset => {
+    const value = parseInt(full.slice(offset, offset + 2), 16) / 255;
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+
+/**
+ * Texto sobre uma cor cheia (botão primário, selo, alerta). O `accentInk` de cada preset é a cor de
+ * destaque *sobre o fundo*; em botão cheio ela daria contraste baixo — por isso o texto sobre o
+ * accent é calculado, não escolhido a dedo. Escolhe entre preto e branco o de maior contraste.
+ */
+export function readableOn(hexColor: string): string {
+  const luminance = relativeLuminance(hexColor);
+  const againstBlack = (luminance + 0.05) / 0.05;
+  const againstWhite = 1.05 / (luminance + 0.05);
+  return againstBlack >= againstWhite ? '#101014' : '#ffffff';
+}
+
+/** Razão de contraste WCAG entre duas cores hex (1 a 21) — a prova numérica do craft floor. */
+export function contrastRatio(a: string, b: string): number {
+  const first = relativeLuminance(a);
+  const second = relativeLuminance(b);
+  const lighter = Math.max(first, second);
+  const darker = Math.min(first, second);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
 function shadow(ds: DesignSystem): string {
   if (ds.depth === 'flat') return 'none';
   // O bloco deslocado é caro e barulhento: só o mundo que o declara (Brutal) o recebe.
@@ -124,6 +155,47 @@ export function designSystemVars(ds: DesignSystem): Record<string, string> {
     '--text': c.text, '--muted': c.muted, '--quiet': c.muted, '--line': c.line,
     '--accent': c.accent, '--accent-hover': c.accentHover, '--accent-soft': c.accentSoft, '--accent-ink': c.accentInk,
     '--chart': c.chart, '--danger': c.danger, '--danger-bg': c.dangerBg,
+    /* Tokens que o shadcn espera: o `@theme inline` do Tailwind aponta para estes nomes, então a
+       base de componentes herda a identidade do sistema sem paleta duplicada. */
+    '--hover': c.subtle,
+    '--accent-on': readableOn(c.accent),
+    '--ring': c.accent,
+    '--input': c.line,
+    '--chart-2': c.accent,
+    '--chart-3': withAlpha(c.chart, 0.45),
+    '--font-sans-stack': fontStacks.sans,
+    '--font-mono-stack': fontStacks.mono,
+    /* Os utilitários do Tailwind leem `--color-*`. Emitir o valor LITERAL aqui (e não uma cadeia de
+       var()) é o que faz cada escopo resolver os seus tokens: a superfície gerada veste o sistema
+       que a resposta declarou, sem vazar para a casca da aplicação. */
+    '--color-background': c.bg,
+    '--color-foreground': c.text,
+    '--color-card': c.surface,
+    '--color-card-foreground': c.text,
+    '--color-popover': c.surface,
+    '--color-popover-foreground': c.text,
+    '--color-primary': c.accent,
+    '--color-primary-foreground': readableOn(c.accent),
+    '--color-secondary': c.subtle,
+    '--color-secondary-foreground': c.text,
+    '--color-muted': c.subtle,
+    '--color-muted-foreground': c.muted,
+    '--color-accent': c.subtle,
+    '--color-accent-foreground': c.text,
+    '--color-destructive': c.danger,
+    '--color-destructive-foreground': readableOn(c.danger),
+    '--color-border': c.line,
+    '--color-input': c.line,
+    '--color-ring': c.accent,
+    '--color-chart-1': c.chart,
+    '--color-chart-2': c.accent,
+    '--color-chart-3': withAlpha(c.chart, 0.45),
+    '--radius-sm': `${Math.max(ds.radius - 4, 0)}px`,
+    '--radius-md': `${Math.max(ds.radius - 2, 0)}px`,
+    '--radius-lg': `${ds.radius}px`,
+    '--radius-xl': `${ds.radius + 4}px`,
+    '--font-sans': fontStacks.sans,
+    '--font-mono': fontStacks.mono,
     '--radius': `${ds.radius}px`,
     '--shadow': shadow(ds),
     '--surface-shadow': ds.depth === 'soft' ? 'none' : shadow(ds),

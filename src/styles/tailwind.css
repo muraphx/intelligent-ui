@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/*
+ * Tailwind + shadcn como base, com a identidade vinda do design system.
+ *
+ * O `@theme inline` mapeia os nomes de token que o shadcn espera (`--color-primary`, `--color-card`…)
+ * para as variáveis que o design system escreve em tempo de execução no container da superfície.
+ * Por isso NÃO existe paleta duplicada aqui: trocar o preset reestiliza os componentes shadcn.
+ */
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+
+  --color-card: var(--surface);
+  --color-card-foreground: var(--text);
+  --color-popover: var(--surface);
+  --color-popover-foreground: var(--text);
+
+  /* primary = a cor de marca do sistema; o texto sobre ela é calculado por luminância. */
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--accent-on);
+
+  --color-secondary: var(--subtle);
+  --color-secondary-foreground: var(--text);
+
+  --color-muted: var(--subtle);
+  --color-muted-foreground: var(--muted);
+
+  /* No shadcn `accent` é a superfície de hover/seleção, não a cor de marca. */
+  --color-accent: var(--hover);
+  --color-accent-foreground: var(--text);
+
+  --color-destructive: var(--danger);
+  --color-destructive-foreground: var(--accent-on);
+
+  --color-border: var(--line);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-chart-1: var(--chart);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-sans-stack);
+  --font-mono: var(--font-mono-stack);
+}
+
+/* Fallback neutro: o design system sobrescreve tudo no container da superfície. */
+:root {
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --subtle: #f0f4f9;
+  --hover: #f0f4f9;
+  --text: #1c2635;
+  --muted: #5c6b80;
+  --line: #dde5ee;
+  --input: #dde5ee;
+  --accent: #1d6cf0;
+  --accent-on: #ffffff;
+  --ring: #1d6cf0;
+  --danger: #c0392b;
+  --chart: #6fa1f5;
+  --chart-2: #1d6cf0;
+  --chart-3: #a9c6fb;
+  --radius: 10px;
+  --font-sans-stack: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono-stack: "JetBrains Mono", "Cascadia Code", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
